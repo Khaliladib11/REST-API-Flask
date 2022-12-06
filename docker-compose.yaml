@@ -2,6 +2,7 @@ version: '3.8'
 services:
   api-service:
     build: .
+    image: flaskapi_image
     volumes:
       - ./:/app
     ports:
