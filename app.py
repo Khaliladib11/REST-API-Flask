@@ -8,6 +8,8 @@ import os
 from resources.store import blp as StoreBlueprint
 from resources.item import blp as ItemBlueprint
 
+# Create function to call whenever we want to run the flask app
+# we can use at test time as well
 def create_app(db_url=None):
     app = Flask(__name__)
 

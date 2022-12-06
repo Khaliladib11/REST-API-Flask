@@ -7,15 +7,22 @@ from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from db import db
 from models import StoreModel
 
+# Create Blueprint for the stores
 
 blp = Blueprint("stores", __name__, description="Opertations on stores")
 
+
+# Endpoints start with /store
 @blp.route("/store")
 class StoreList(MethodView):
+
+    # get all stores
     @blp.response(200, StoreSchema(many=True))
     def get(self):
         return StoreModel.query.all()
     
+
+    # Create new store
     @blp.arguments(StoreSchema)
     @blp.response(200, StoreSchema)
     def post(self, store_data):
@@ -30,13 +37,19 @@ class StoreList(MethodView):
         return store
     
 
+
+# Endpoint start with /store/store_id
 @blp.route("/store/<string:store_id>")
 class Store(MethodView):
+
+    # get a store with specific id
     @blp.response(200, StoreSchema)
     def get(self, store_id):
         store = StoreModel.query.get_or_404(store_id)
         return store
 
+
+    # delete a specific store with store_id
     def delete(self, store_id):
         store = StoreModel.query.get_or_404(store_id)
         db.session.delete(store)
