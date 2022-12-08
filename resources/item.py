@@ -2,60 +2,72 @@ import uuid
 from flask import Flask, request
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
-from db import items, stores
 from schemas import ItemSchema, ItemUpdateSchema
+from models import ItemModel
+from db import db
+from sqlalchemy.exc import SQLAlchemyError
 
-
+# Create Blueprint for the items
 blp = Blueprint("Items", __name__, description="Opertations on Items")
 
+
+# Endpoints start with /item
 @blp.route("/item")
 class ItemList(MethodView):
 
+    # get all items
     @blp.response(200, ItemSchema(many=True))
     def get(self):
-        return items.values()
+        return ItemModel.query.all()
 
+
+    # create new item
     @blp.arguments(ItemSchema)
     @blp.response(201, ItemSchema)
     def post(self, item_data):
-        for item in items.values():
-            if (
-            item_data["name"] == item["name"]
-            and item_data["store_id"] == item["store_id"]
-            ):
-                abort (400, message="Item already exists.")
+        item = ItemModel(**item_data)
+        try:
+            db.session.add(item)
+            db.session.commit()
+        except SQLAlchemyError:
+            abort(500, message="An error occurred while inserting the item.")
+        return item
 
-        if item_data["store_id"] not in stores:
-            abort(404, message="Store not found.")
 
-        item_id = uuid.uuid4().hex
-        item = {'id': item_id, "name": item_data['name'], "price": item_data['price']}
-        items[item_id] = item
-
-        return item, 201
-
+# Endpoints start with /item/item_id
 @blp.route("/item/<string:item_id>")
 class Item(MethodView):
+
+    # get item with specific item_id
     @blp.response(200, ItemSchema)
     def get(self, item_id):
-        try:
-            return items[item_id]
-        except KeyError:
-            abort(404, message="Item not found.")
+        item = ItemModel.query.get_or_404(item_id)
+        return item
     
+
+    # update an item
     @blp.arguments(ItemUpdateSchema)
     @blp.response(200, ItemSchema)
     def put(self, item_data, item_id):
-        try:
-            item = items[item_id]
-            item |= item_data
-            return item
-        except KeyError:
-            abort(400, message="Item not found.")
+        item = ItemModel.query.get(item_id)
+        
+        # if the item already exites, update the value of 'name' and 'price'
+        if item:
+            item.name = item_data["name"]
+            item.price = item_data["price"]
 
+        # if the item doen't exicts create new row in the database
+        else:
+            item = ItemModel(id=item_id,**item_data)
+        
+        db.session.add(item)
+        db.session.commit()
+        return item
+
+
+    # delete an item with specific item_id
     def delete(self, item_id):
-        try:
-            del items[item_id]
-            return {"message": "Item deleted."}
-        except KeyError:
-            abort(400, message="Item not found.")
+        item = ItemModel.query.get_or_404(item_id)
+        db.session.delete(item)
+        db.session.commit()
+        return {"message": "Item deleteted successfully."}
