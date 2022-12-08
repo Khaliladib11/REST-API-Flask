@@ -9,7 +9,7 @@ from models import StoreModel
 
 # Create Blueprint for the stores
 
-blp = Blueprint("stores", __name__, description="Opertations on stores")
+blp = Blueprint("Stores", "stores", description="Opertations on stores")
 
 
 # Endpoints start with /store
@@ -39,7 +39,7 @@ class StoreList(MethodView):
 
 
 # Endpoint start with /store/store_id
-@blp.route("/store/<string:store_id>")
+@blp.route("/store/<int:store_id>")
 class Store(MethodView):
 
     # get a store with specific id

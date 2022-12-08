@@ -8,7 +8,7 @@ from db import db
 from sqlalchemy.exc import SQLAlchemyError
 
 # Create Blueprint for the items
-blp = Blueprint("Items", __name__, description="Opertations on Items")
+blp = Blueprint("Items", "items", description="Opertations on Items")
 
 
 # Endpoints start with /item
@@ -35,7 +35,7 @@ class ItemList(MethodView):
 
 
 # Endpoints start with /item/item_id
-@blp.route("/item/<string:item_id>")
+@blp.route("/item/<int:item_id>")
 class Item(MethodView):
 
     # get item with specific item_id

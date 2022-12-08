@@ -11,6 +11,8 @@ import models
 from resources.store import blp as StoreBlueprint
 from resources.item import blp as ItemBlueprint
 from resources.tag import blp as TagBlueprint
+from resources.user import blp as UserBlueprint
+
 
 # Create function to call whenever we want to run the flask app
 # we can use at test time as well
@@ -39,5 +41,6 @@ def create_app(db_url=None):
     api.register_blueprint(StoreBlueprint)
     api.register_blueprint(ItemBlueprint)
     api.register_blueprint(TagBlueprint)
+    api.register_blueprint(UserBlueprint)
     
     return app
