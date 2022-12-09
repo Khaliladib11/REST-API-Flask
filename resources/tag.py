@@ -1,4 +1,5 @@
 from flask.views import MethodView
+from flask_jwt_extended import jwt_required
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -17,7 +18,8 @@ class TagInStore(MethodView):
         store = StoreModel.query.get_or_404(store_id)
         return store.tags.all()
 
-
+    
+    @jwt_required
     @blp.arguments(TagSchema)
     @blp.response(201, TagSchema)
     def post(self, tag_data, store_id):
@@ -84,6 +86,7 @@ class LinkTagsToItem(MethodView):
         
         return tag
 
+    @jwt_required
     @blp.response(200, TagAndItemSchema)
     def delete(self, item_id, tag_id):
         item = ItemModel.query.get_or_404(item_id)

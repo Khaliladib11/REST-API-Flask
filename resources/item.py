@@ -15,7 +15,6 @@ blp = Blueprint("Items", "items", description="Opertations on Items")
 class ItemList(MethodView):
 
     # get all items
-    @jwt_required()
     @blp.response(200, ItemSchema(many=True))
     def get(self):
         return ItemModel.query.all()
@@ -40,7 +39,6 @@ class ItemList(MethodView):
 class Item(MethodView):
 
     # get item with specific item_id
-    @jwt_required()
     @blp.response(200, ItemSchema)
     def get(self, item_id):
         item = ItemModel.query.get_or_404(item_id)
