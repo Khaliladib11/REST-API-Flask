@@ -21,7 +21,7 @@ class ItemList(MethodView):
 
 
     # create new item
-    @jwt_required()
+    @jwt_required(fresh=True)
     @blp.arguments(ItemSchema)
     @blp.response(201, ItemSchema)
     def post(self, item_data):
