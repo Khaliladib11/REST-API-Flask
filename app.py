@@ -3,6 +3,7 @@ import secrets
 
 from flask import Flask, jsonify
 from flask_smorest import Api
+from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 
 from db import db
@@ -19,6 +20,7 @@ from resources.user import blp as UserBlueprint
 # we can use at test time as well
 def create_app(db_url=None):
     app = Flask(__name__)
+    
 
     app.config["PROPAGATE_EXCEPTIONS"] = True
     app.config["API_TITLE"] = "Stores REST API"
@@ -31,6 +33,7 @@ def create_app(db_url=None):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     db.init_app(app)
+    migarte = Migrate(app, db)
     api = Api(app)
 
     app.config["JWT_SECRET_KEY"] = "53615338007901210201740126275944927598"  # Secret Key
@@ -97,9 +100,6 @@ def create_app(db_url=None):
             ), 401
         )
 
-
-    with app.app_context():
-        db.create_all()
 
     api.register_blueprint(StoreBlueprint)
     api.register_blueprint(ItemBlueprint)
