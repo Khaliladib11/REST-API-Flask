@@ -6,6 +6,7 @@ class ItemModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)  # id as primary key
     name = db.Column(db.String(80), unique=True, nullable=False)  # name of the item
+    description = db.Column(db.String)
     price = db.Column(db.Float(precision=2), unique=False, nullable=False)  # the price of the item
 
     # the id of the store which will be foreign key
